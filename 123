@@ -33,3 +33,58 @@ class HashTable:
             if node.data.key == key:
                 return node.data.value  # Возврат значения, если ключ найден в связанном списке
             node = node.next            # Переход к следующему узлу в связанном списке
+    def pop(self, key):
+        index = self._hash(key)  # Вычисление хэш-кода ключа
+        if self.array[index] is not None:  # Проверка, что в указанной ячейке массива есть элементы
+            pair_list = self.array[index]  # Получение связанного списка по вычисленному индексу
+            for i in range(len(pair_list)):  # Проход по всем элементам связанного списка
+                if pair_list[i].key == key:  # Если нашли пару с указанным ключом
+                    value = pair_list[i].value  # Запоминаем значение этой пары
+                    del pair_list[i]  # Удаляем эту пару из связанного списка
+                    self.keys_list.remove(key)  # Удаляем ключ из связанного списка ключей
+                    self.count -= 1  # Уменьшаем счетчик числа элементов
+                    return value  # Возвращаем значение удаленной пары
+        raise KeyError("Key not found")  # Если ключ не найден, генерируем исключение KeyError
+def rareWord(s: str) -> str:
+    '''
+    Принимает на вход строку и выводит слово, которое встречается во фразе реже всего.
+    Если редких слов несколько, нужно вывести то, которое меньше в лексикографическом порядке.
+    Регистр слов не учитывается (приводите к нижнему), знаки препинания в предложениях игнорируются.
+    >>> rareWord('aa, bb, AA, BB')
+    'aa'
+    >>> rareWord('bb, ccc, a, DDDD')
+    'a'
+    '''
+    import re
+
+    words = re.findall(r'\b\w+\b', s.lower())  # Получаем список всех слов во входной строке в нижнем регистре
+    word_counts = {}
+
+    # Считаем количество вхождений каждого слова
+    for word in words:
+        word_counts[word] = word_counts.get(word, 0) + 1
+
+    min_count = min(word_counts.values())  # Находим минимальное количество вхождений
+    rarest_words = [word for word, count in word_counts.items() if count == min_count]  # Получаем список редких слов
+    rarest_words.sort()  # Сортируем список редких слов
+
+    return rarest_words[0]  # Возвращаем первое слово из отсортированного списка
+def romanToInt(romNum: str):
+    # Определяем соответствие римских цифр и их десятичных значений в словаре
+    roman_numerals = {
+        'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000
+    }
+    result = 0
+    prev_value = 0
+
+    # Проходим по римской строке в обратном порядке
+    for char in romNum[::-1]:
+        value = roman_numerals[char]  # Получаем десятичное значение текущей римской цифры
+
+        # Если значение текущей цифры меньше предыдущей, вычитаем его из результата, иначе прибавляем
+        if value < prev_value:
+            result -= value
+        else:
+            result += value
+        prev_value = value  # Обновляем предыдущее значение для следующей итерации
+    return result  # Возвращаем десятичное значение римского числа
