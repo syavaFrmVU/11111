@@ -1,0 +1,35 @@
+class Pair:
+    def __init__(self, key, value):
+        self.key = key         # Создание атрибута key для объекта пары
+        self.value = value     # Создание атрибута value для объекта пары
+class HashTable:
+    def __init__(self, size=10):
+        self.array = [None] * size    # Создание массива определенного размера, инициализированного значением None
+        self.count = 0                # Инициализация счетчика числа элементов
+        self.keys_list = LinkedList()  # Создание экземпляра связанного списка для хранения ключей
+    def __str__(self):
+        pairs = []                    # Создание списка для хранения строковых представлений пар ключ-значение
+        node = self.keys_list.head    # Получение ссылки на голову связанного списка ключей
+        while node:
+            key = node.data           # Получение ключа из текущего узла
+            value = self[key]         # Получение значения по ключу
+            pairs.append(f"'{key}' : {value}")  # Формирование строки вида 'ключ' : значение и добавление ее в список
+            node = node.next          # Переход к следующему узлу в связанном списке ключей
+        return "{" + ", ".join(pairs) + "}"  # Формирование и возврат строки, объединяя все строки из списка pairs
+    def __setitem__(self, key, value):
+        index = self._hash(key)      # Вычисление хэш-кода ключа
+        pair = Pair(key, value)      # Создание объекта пары ключ-значение
+        if self.array[index] is None:
+            self.array[index] = LinkedList()  # Создание связанного списка, если в указанной ячейке массива пусто
+        self.array[index].append(pair)  # Добавление пары в связанный список по вычисленному индексу
+        self.keys_list.append(key)      # Добавление ключа в связанный список ключей
+        self.count += 1                 # Увеличение счетчика числа элементов
+    def __getitem__(self, key):
+        index = self._hash(key)        # Вычисление хэш-кода ключа
+        if self.array[index] is None:
+            raise KeyError(f"'{key}'")  # Вызов исключения, если ячейка массива по вычисленному индексу пуста
+        node = self.array[index].head   # Получение ссылки на голову связанного списка по указанному индексу
+        while node:
+            if node.data.key == key:
+                return node.data.value  # Возврат значения, если ключ найден в связанном списке
+            node = node.next            # Переход к следующему узлу в связанном списке
